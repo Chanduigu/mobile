@@ -7,7 +7,7 @@ import CreateStoreForm from '@/components/create-store-form';
 import StoreList from '@/components/store-list';
 
 export default async function StoresPage() {
-    const allStores = await db.select().from(stores).all();
+    const allStores = await db.select().from(stores);
     const balances = await getStoreBalances();
 
     return (

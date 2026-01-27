@@ -52,7 +52,7 @@ export default async function DriverPage({ searchParams }: { searchParams: Promi
         and(
             eq(orders.driverId, driverId),
         )
-    ).all();
+    );
 
     // Filter logic for today relative to order.date string
     const ordersToday = todaysOrders.filter((o: any) => o.date.startsWith(today));

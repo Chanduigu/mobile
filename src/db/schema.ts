@@ -57,6 +57,7 @@ export const orders = pgTable('orders', {
     collectedBy: collectedByEnum('collected_by').default('DRIVER'),
     collectorName: text('collector_name'),
     type: orderTypeEnum('type').default('delivery'),
+    paymentProof: text('payment_proof'),
     createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -74,6 +75,7 @@ export const routes = pgTable('routes', {
     date: text('date').notNull(), // YYYY-MM-DD
     routeNumber: integer('route_number').notNull().default(1),
     status: routeStatusEnum('status').default('new'),
+    slot: text('slot').default('Morning'),
     createdAt: timestamp('created_at').defaultNow(),
     closedAt: timestamp('closed_at'),
 });

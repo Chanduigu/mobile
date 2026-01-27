@@ -22,14 +22,13 @@ export async function getRouteHistory(startDate?: string, endDate?: string) {
         .from(routes)
         .leftJoin(users, eq(routes.driverId, users.id))
         .where(whereClause)
-        .orderBy(desc(routes.date))
-        .all();
+        .orderBy(desc(routes.date));
 
     const history = await Promise.all(allRoutes.map(async (route: any) => {
-        const stops = await db.select().from(routeStops).where(eq(routeStops.routeId, route.id)).all();
+        const stops = await db.select().from(routeStops).where(eq(routeStops.routeId, route.id));
 
         // Fix: fetch by routeId for strict linking
-        const routeOrders = await db.select().from(orders).where(eq(orders.routeId, route.id)).all();
+        const routeOrders = await db.select().from(orders).where(eq(orders.routeId, route.id));
 
         const totalStops = stops.length;
         const completedStops = stops.filter((s: any) => s.status === 'visited').length;
@@ -59,7 +58,7 @@ export async function getRouteDetails(routeId: string) {
         .from(routes)
         .leftJoin(users, eq(routes.driverId, users.id))
         .where(eq(routes.id, routeId))
-        .get();
+        .then(res => res[0]);
 
     if (!route) return null;
 
@@ -77,12 +76,11 @@ export async function getRouteDetails(routeId: string) {
         .from(routeStops)
         .leftJoin(stores, eq(routeStops.storeId, stores.id))
         .where(eq(routeStops.routeId, routeId))
-        .orderBy(asc(routeStops.sequence))
-        .all();
+        .orderBy(asc(routeStops.sequence));
 
 
 
-    const routeOrders = await db.select().from(orders).where(eq(orders.routeId, routeId)).all();
+    const routeOrders = await db.select().from(orders).where(eq(orders.routeId, routeId));
 
     // Fetch items for consolidated summary
     const orderIds = routeOrders.map((o: any) => o.id);
@@ -99,8 +97,7 @@ export async function getRouteDetails(routeId: string) {
         })
             .from(orderItems)
             .leftJoin(items, eq(orderItems.itemId, items.id))
-            .where(inArray(orderItems.orderId, orderIds))
-            .all();
+            .where(inArray(orderItems.orderId, orderIds));
     }
 
     const consolidatedItems: Record<string, { name: string, quantity: number, total: number }> = {};
@@ -160,8 +157,7 @@ export async function getRevenueReport(startDate?: string, endDate?: string) {
     })
         .from(orders)
         .leftJoin(stores, eq(orders.storeId, stores.id))
-        .where(whereClause)
-        .all();
+        .where(whereClause);
 
     const storeStats: Record<string, { name: string, total: number, paid: number, pending: number }> = {};
     let grandTotal = 0;
@@ -211,8 +207,7 @@ export async function getItemSalesReport(startDate?: string, endDate?: string) {
         .leftJoin(orders, eq(orderItems.orderId, orders.id))
         .leftJoin(items, eq(orderItems.itemId, items.id))
         .leftJoin(stores, eq(orders.storeId, stores.id))
-        .where(whereClause)
-        .all();
+        .where(whereClause);
 
     const itemStats: Record<string, {
         name: string,
@@ -261,8 +256,7 @@ export async function getDriverReport(startDate?: string, endDate?: string) {
     })
         .from(orders)
         .leftJoin(users, eq(orders.driverId, users.id))
-        .where(whereClause)
-        .all();
+        .where(whereClause);
 
     // Need items to count total items delivered? That's expensive to fetch all items for all orders.
     // Let's do a separate aggregate if needed, or just count orders/revenue for now.
@@ -286,8 +280,7 @@ export async function getDriverReport(startDate?: string, endDate?: string) {
         })
             .from(orderItems)
             .where(inArray(orderItems.orderId, orderIds))
-            .groupBy(orderItems.orderId)
-            .all();
+            .groupBy(orderItems.orderId);
 
         counts.forEach((c: any) => itemCounts[c.orderId] = c.qty);
     }
@@ -330,7 +323,7 @@ export async function getDriverDailyStats(driverId: string, date: string) {
             eq(orders.driverId, driverId),
             eq(orders.date, date)
         )
-    ).all();
+    );
 
     const totalCollected = dayOrders.reduce((sum: number, o: any) => sum + (o.paidAmount || 0), 0);
     const totalPending = dayOrders.reduce((sum: number, o: any) => sum + ((o.totalAmount || 0) - (o.paidAmount || 0)), 0);
@@ -360,8 +353,7 @@ export async function getDriverOrders(driverId: string, startDate?: string, endD
         .from(orders)
         .leftJoin(stores, eq(orders.storeId, stores.id))
         .where(whereClause)
-        .orderBy(desc(orders.date))
-        .all();
+        .orderBy(desc(orders.date));
 
     // Fetch items for these orders
     const orderIds = driverOrders.map((o: any) => o.id);
@@ -376,8 +368,7 @@ export async function getDriverOrders(driverId: string, startDate?: string, endD
         })
             .from(orderItems)
             .leftJoin(items, eq(orderItems.itemId, items.id))
-            .where(inArray(orderItems.orderId, orderIds))
-            .all();
+            .where(inArray(orderItems.orderId, orderIds));
 
         itemsData.forEach((item: any) => {
             if (!orderItemsMap[item.orderId]) {
@@ -422,7 +413,7 @@ export async function getDriverItemSummary(driverId: string, startDate?: string,
         : eq(orders.driverId, driverId);
 
     // Get order IDs first
-    const driverOrders = await db.select({ id: orders.id }).from(orders).where(whereClause).all();
+    const driverOrders = await db.select({ id: orders.id }).from(orders).where(whereClause);
     const orderIds = driverOrders.map((o: any) => o.id);
 
     if (orderIds.length === 0) return [];
@@ -436,9 +427,8 @@ export async function getDriverItemSummary(driverId: string, startDate?: string,
         .from(orderItems)
         .leftJoin(items, eq(orderItems.itemId, items.id))
         .where(inArray(orderItems.orderId, orderIds))
-        .groupBy(orderItems.itemId)
-        .orderBy(desc(sql<number>`sum(${orderItems.quantity})`))
-        .all();
+        .groupBy(orderItems.itemId, items.name)
+        .orderBy(desc(sql<number>`sum(${orderItems.quantity})`));
 
     return summary.map((item: any) => ({
         itemId: item.itemId,

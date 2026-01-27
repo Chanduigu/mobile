@@ -6,12 +6,12 @@ import Link from 'next/link';
 
 export default async function StoreDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const store = await db.select().from(stores).where(eq(stores.id, id)).get();
+    const store = await db.select().from(stores).where(eq(stores.id, id)).then(res => res[0]);
 
     if (!store) notFound();
 
     // Fetch all orders for this store
-    const storeOrders = await db.select().from(orders).where(eq(orders.storeId, id)).orderBy(desc(orders.date)).all();
+    const storeOrders = await db.select().from(orders).where(eq(orders.storeId, id)).orderBy(desc(orders.date));
 
     // Fetch all order items linked to these orders
     // SQLite doesn't support complex joins easily in one go with simple query builder, 
@@ -20,7 +20,7 @@ export default async function StoreDetailsPage({ params }: { params: Promise<{ i
 
     // Let's get "Item Sales Report" for this store
     // 1. Get all items
-    const allItems = await db.select().from(items).all();
+    const allItems = await db.select().from(items);
     const itemMap = new Map(allItems.map((i: any) => [i.id, i.name]));
 
     // 2. We need to aggregate sales per item for this store.
@@ -45,8 +45,7 @@ export default async function StoreDetailsPage({ params }: { params: Promise<{ i
         })
             .from(orderItems)
             .innerJoin(orders, eq(orders.id, orderItems.orderId))
-            .where(eq(orders.storeId, id))
-            .all();
+            .where(eq(orders.storeId, id));
 
         storeOrderItems = rows;
     }

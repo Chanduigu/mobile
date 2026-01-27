@@ -32,7 +32,7 @@ const nextAuthResult = NextAuth({
 
                 if (parsedCredentials.success) {
                     const { username, password } = parsedCredentials.data;
-                    const user = await db.select().from(users).where(eq(users.username, username)).get();
+                    const user = await db.select().from(users).where(eq(users.username, username)).then(res => res[0]);
 
                     if (!user) return null;
 

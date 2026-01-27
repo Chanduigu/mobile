@@ -4,9 +4,9 @@ import { eq } from 'drizzle-orm';
 import RoutePlanner from '@/components/route-planner';
 
 export default async function RoutePlannerPage() {
-    const drivers = await db.select({ id: users.id, name: users.name }).from(users).where(eq(users.role, 'driver')).all();
-    const allStores = await db.select({ id: stores.id, name: stores.name, address: stores.address }).from(stores).all();
-    const allItems = await db.select().from(items).all();
+    const drivers = await db.select({ id: users.id, name: users.name }).from(users).where(eq(users.role, 'driver'));
+    const allStores = await db.select({ id: stores.id, name: stores.name, address: stores.address }).from(stores);
+    const allItems = await db.select().from(items);
 
     return (
         <div className="space-y-6">

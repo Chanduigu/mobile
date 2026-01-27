@@ -19,7 +19,7 @@ export async function addDriver(prevState: any, formData: FormData) {
 
     try {
         // Check if username exists
-        const existing = await db.select().from(users).where(eq(users.username, username)).get();
+        const existing = await db.select().from(users).where(eq(users.username, username)).then(res => res[0]);
         if (existing) {
             return { message: 'Username already taken.' };
         }
@@ -62,7 +62,7 @@ export async function updateOwner(prevState: any, formData: FormData) {
 
     try {
         // Find owner (Safety check: Must be role='owner')
-        const owner = await db.select().from(users).where(and(eq(users.role, 'owner'), eq(users.username, currentUsername))).get();
+        const owner = await db.select().from(users).where(and(eq(users.role, 'owner'), eq(users.username, currentUsername))).then(res => res[0]);
 
         if (!owner) {
             return { message: 'Current username incorrect or not an owner.' };
@@ -70,7 +70,7 @@ export async function updateOwner(prevState: any, formData: FormData) {
 
         // Check uniqueness if changing username
         if (newUsername !== currentUsername) {
-            const existing = await db.select().from(users).where(eq(users.username, newUsername)).get();
+            const existing = await db.select().from(users).where(eq(users.username, newUsername)).then(res => res[0]);
             if (existing) {
                 return { message: 'New username is already taken.' };
             }

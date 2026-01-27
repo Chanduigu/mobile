@@ -9,7 +9,7 @@ import { redirect } from 'next/navigation';
 export async function updateOrderAndPayment(
     orderId: string,
     itemsData: Record<string, number>, // itemId -> new Qty
-    paymentData: { method: 'cash' | 'upi'; amount: number }
+    paymentData: { method: 'cash' | 'upi'; amount: number; paymentProof?: string }
 ) {
     if (!orderId) return { error: "Invalid ID" };
 
@@ -39,7 +39,8 @@ export async function updateOrderAndPayment(
                 totalAmount: newTotal,
                 paidAmount: paymentData.amount,
                 paymentMethod: paymentData.method,
-                status: 'delivered' // Mark as delivered when driver submits
+                status: 'delivered', // Mark as delivered when driver submits
+                paymentProof: paymentData.paymentProof || null
             }).where(eq(orders.id, orderId));
         });
 

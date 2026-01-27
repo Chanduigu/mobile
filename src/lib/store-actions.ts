@@ -55,7 +55,7 @@ export async function deleteStore(id: string, _formData?: FormData) {
 export async function updateStorePrice(storeId: string, itemId: string, price: number) {
     try {
         console.log(`Updating price for Store ${storeId}, Item ${itemId} to ${price}`);
-        const existing = await db.select().from(storePrices).where(and(eq(storePrices.storeId, storeId), eq(storePrices.itemId, itemId))).get();
+        const existing = await db.select().from(storePrices).where(and(eq(storePrices.storeId, storeId), eq(storePrices.itemId, itemId))).then(res => res[0]);
 
         if (existing) {
             await db.update(storePrices).set({ price }).where(eq(storePrices.id, existing.id));
@@ -110,7 +110,7 @@ export async function getStoreBalances() {
         storeId: orders.storeId,
         total: orders.totalAmount,
         paid: orders.paidAmount
-    }).from(orders).all();
+    }).from(orders);
 
     const storeStats: Record<string, { balance: number, revenue: number }> = {};
 
@@ -139,7 +139,7 @@ export async function getStoreDetails(storeId: string) {
     const storeOrders = await db.select({
         total: orders.totalAmount,
         paid: orders.paidAmount
-    }).from(orders).where(eq(orders.storeId, storeId)).all();
+    }).from(orders).where(eq(orders.storeId, storeId));
 
     let totalBilled = 0;
     let totalPaid = 0;
@@ -154,7 +154,7 @@ export async function getStoreDetails(storeId: string) {
     totalPaid = Math.round(totalPaid * 100) / 100;
     const balance = Math.round((totalBilled - totalPaid) * 100) / 100;
 
-    const store = await db.select().from(stores).where(eq(stores.id, storeId)).get();
+    const store = await db.select().from(stores).where(eq(stores.id, storeId)).then(res => res[0]);
 
     return {
         id: storeId,

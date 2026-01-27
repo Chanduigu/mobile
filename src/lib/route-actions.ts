@@ -18,7 +18,7 @@ export async function saveRoute(driverId: string, date: string, storeIds: string
                     eq(routes.date, date)
                 )
             )
-            .all();
+            ;
 
         const routeNumber = existingRoutes.length + 1;
         const routeId = uuidv4();
@@ -32,7 +32,7 @@ export async function saveRoute(driverId: string, date: string, storeIds: string
             date,
             routeNumber: routeNumber, // Auto increment
             status: 'new' // Start as 'new'
-        }).run();
+        });
 
         // 3. Insert Stops
         if (storeIds.length > 0) {
@@ -90,7 +90,7 @@ export async function saveRouteLoad(routeId: string, items: { itemId: string, qu
 export async function getDailyRoutes(driverId: string, date: string) {
     const dailyRoutes = await db.select().from(routes).where(
         and(eq(routes.driverId, driverId), eq(routes.date, date))
-    ).all();
+    );
 
     if (dailyRoutes.length === 0) return [];
 
@@ -113,8 +113,7 @@ export async function getDailyRoutes(driverId: string, date: string) {
             .from(routeStops)
             .leftJoin(stores, eq(routeStops.storeId, stores.id))
             .where(eq(routeStops.routeId, route.id))
-            .orderBy(asc(routeStops.sequence))
-            .all();
+            .orderBy(asc(routeStops.sequence));
 
         const load = await db.select({
             itemId: routeVehicleLoad.itemId,
@@ -123,8 +122,7 @@ export async function getDailyRoutes(driverId: string, date: string) {
         })
             .from(routeVehicleLoad)
             .leftJoin(items, eq(routeVehicleLoad.itemId, items.id))
-            .where(eq(routeVehicleLoad.routeId, route.id))
-            .all();
+            .where(eq(routeVehicleLoad.routeId, route.id));
 
         results.push({ route, stops, load });
     }
@@ -141,7 +139,7 @@ export async function getRoute(driverId: string, date: string) {
 export async function getRouteLoadComparison(routeId: string) {
     try {
         // 1. Get Route Details to find Driver + Date
-        const currentRoute = await db.select().from(routes).where(eq(routes.id, routeId)).get();
+        const currentRoute = await db.select().from(routes).where(eq(routes.id, routeId)).then(res => res[0]);
         if (!currentRoute) return null;
 
         const { driverId, date } = currentRoute;
@@ -152,14 +150,12 @@ export async function getRouteLoadComparison(routeId: string) {
             quantity: routeVehicleLoad.quantity
         })
             .from(routeVehicleLoad)
-            .where(eq(routeVehicleLoad.routeId, routeId))
-            .all();
+            .where(eq(routeVehicleLoad.routeId, routeId));
 
         // 3. Get Delivered Quantities for THIS ROUTE ONLY
         const driverOrders = await db.select({ id: orders.id })
             .from(orders)
-            .where(eq(orders.routeId, routeId))
-            .all();
+            .where(eq(orders.routeId, routeId));
 
         const orderIds = driverOrders.map((o: any) => o.id);
 
@@ -172,8 +168,7 @@ export async function getRouteLoadComparison(routeId: string) {
             })
                 .from(orderItems)
                 .where(inArray(orderItems.orderId, orderIds))
-                .groupBy(orderItems.itemId)
-                .all();
+                .groupBy(orderItems.itemId);
 
             deliveredData.forEach((d: any) => {
                 if (d.itemId) deliveredMap[d.itemId] = Number(d.totalQty);
@@ -181,7 +176,7 @@ export async function getRouteLoadComparison(routeId: string) {
         }
 
         // 5. Merge and Compare
-        const allItems = await db.select().from(items).all();
+        const allItems = await db.select().from(items);
         const itemMap = new Map(allItems.map((i: any) => [i.id, i.name]));
 
         const involvedItemIds = new Set([

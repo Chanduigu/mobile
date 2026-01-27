@@ -9,8 +9,8 @@ export default async function DeliveriesPage({ searchParams }: { searchParams: P
     const params = await searchParams;
 
     // Fetch initial data
-    const allStores = await db.select({ id: stores.id, name: stores.name, address: stores.address }).from(stores).all();
-    const allDrivers = await db.select({ id: users.id, name: users.name }).from(users).where(eq(users.role, 'driver')).all();
+    const allStores = await db.select({ id: stores.id, name: stores.name, address: stores.address }).from(stores);
+    const allDrivers = await db.select({ id: users.id, name: users.name }).from(users).where(eq(users.role, 'driver'));
 
     // Ideally, we fetch orders based on search params here or let the client component handle filtering if dataset is small.
     // Given "Simple App", let's fetch recent 100 or all if possible.

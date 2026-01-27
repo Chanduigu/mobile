@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { createOrder } from '@/lib/order-actions';
+import { uploadPaymentProof } from '@/lib/upload-actions';
 import { getStoreDetails } from '@/lib/store-actions';
 import SearchableSelect from '@/components/searchable-select';
 import { ShoppingCart, Wallet, CreditCard, User, Store, AlertCircle, CheckCircle2, QrCode } from 'lucide-react';
@@ -38,6 +39,7 @@ export default function CreateOrderForm({
     const [quantities, setQuantities] = useState<Record<string, number>>({});
     const [cashPaid, setCashPaid] = useState<number>(0);
     const [upiPaid, setUpiPaid] = useState<number>(0);
+    const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showQR, setShowQR] = useState(false);
     const [fetchedBalance, setFetchedBalance] = useState<number>(0);
@@ -142,6 +144,28 @@ export default function CreateOrderForm({
             }
         }
 
+
+        // Validate UPI Proof
+        if (upiPaid > 0 && !paymentProofFile) {
+            alert('Please upload UPI payment screenshot to proceed.');
+            setIsSubmitting(false);
+            return;
+        }
+
+        // Upload Proof if exists
+        let proofUrl = undefined;
+        if (paymentProofFile) {
+            const formData = new FormData();
+            formData.append('file', paymentProofFile);
+            const uploadRes = await uploadPaymentProof(formData);
+            if (uploadRes.error || !uploadRes.url) {
+                alert('Failed to upload payment proof');
+                setIsSubmitting(false);
+                return;
+            }
+            proofUrl = uploadRes.url;
+        }
+
         try {
             const result = await createOrder({
                 storeId: selectedStoreId,
@@ -154,7 +178,8 @@ export default function CreateOrderForm({
                 redirectPath: role === 'driver' ? '/driver/orders/[id]' : '/owner',
                 collectedBy: collectedBy,
                 collectorName: collectedBy === 'OWNER' ? 'Owner' : drivers.find(d => d.id === selectedDriverId)?.name,
-                type: billType
+                type: billType,
+                paymentProof: proofUrl
             });
 
             if (result && result.error) {
@@ -447,33 +472,62 @@ export default function CreateOrderForm({
                                             />
                                         </div>
                                     </div>
+
+                                    {/* UPI Proof Upload */}
+                                    {upiPaid > 0 && (
+                                        <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+                                            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 block">
+                                                UPI Screenshot (Required)
+                                            </label>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    capture="environment" // Optional: prefer camera on mobile
+                                                    onChange={(e) => setPaymentProofFile(e.target.files?.[0] || null)}
+                                                    className="block w-full text-sm text-gray-500
+                                                        file:mr-4 file:py-2 file:px-4
+                                                        file:rounded-full file:border-0
+                                                        file:text-sm file:font-semibold
+                                                        file:bg-blue-50 file:text-blue-700
+                                                        hover:file:bg-blue-100"
+                                                />
+                                            </div>
+                                            {paymentProofFile && (
+                                                <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                                                    <CheckCircle2 className="w-3 h-3" /> Image selected: {paymentProofFile.name}
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
-
-                                <div className="pt-4 flex items-center justify-between text-sm">
-                                    <span className="text-gray-500">Total Paid</span>
-                                    <span className="font-bold text-green-600 text-lg">₹{cashPaid + upiPaid}</span>
-                                </div>
-
-                                {total > (cashPaid + upiPaid) && (
-                                    <div className="flex items-center justify-between text-sm bg-red-50 p-2 rounded-lg text-red-700 border border-red-100">
-                                        <span className="font-medium">Pending Amount</span>
-                                        <span className="font-bold">₹{total - (cashPaid + upiPaid)}</span>
-                                    </div>
-                                )}
-
-                                <button
-                                    onClick={handleSubmit}
-                                    disabled={isSubmitting}
-                                    className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-orange-200 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none mt-2 text-lg"
-                                >
-                                    {isSubmitting ? 'Processing...' : 'Complete Order'}
-                                </button>
                             </div>
+
+                            <div className="pt-4 flex items-center justify-between text-sm">
+                                <span className="text-gray-500">Total Paid</span>
+                                <span className="font-bold text-green-600 text-lg">₹{cashPaid + upiPaid}</span>
+                            </div>
+
+                            {total > (cashPaid + upiPaid) && (
+                                <div className="flex items-center justify-between text-sm bg-red-50 p-2 rounded-lg text-red-700 border border-red-100">
+                                    <span className="font-medium">Pending Amount</span>
+                                    <span className="font-bold">₹{total - (cashPaid + upiPaid)}</span>
+                                </div>
+                            )}
+
+                            <button
+                                onClick={handleSubmit}
+                                disabled={isSubmitting}
+                                className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-orange-200 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none mt-2 text-lg"
+                            >
+                                {isSubmitting ? 'Processing...' : 'Complete Order'}
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     );
 }
 

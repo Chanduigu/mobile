@@ -21,6 +21,7 @@ export async function createOrder(data: {
     upiReceived?: number;
     status?: string;
     redirectPath?: string;
+    paymentProof?: string;
 }) {
     // Validate basics
     if (!data.storeId) {
@@ -70,41 +71,41 @@ export async function createOrder(data: {
     });
 
     try {
-        // NOTE: better-sqlite3 transactions are synchronous. Do not await them.
-        db.transaction((tx: any) => {
+        await db.transaction(async (tx) => {
             console.log('[createOrder] Inserting order...');
-            tx.insert(orders).values({
+            await tx.insert(orders).values({
                 id: orderId,
                 storeId: data.storeId,
                 driverId: finalDriverId || null,
                 routeId: data.routeId || null,
                 date: new Date().toISOString(),
-                status: status as 'pending' | 'delivered' | 'cancelled',
+                status: status as any, // Enums mismatch potential, casting as any or matching strictly
                 totalAmount: totalAmount,
                 paidAmount: totalPaid,
                 cashPaid: cashReceived,
                 upiPaid: upiReceived,
-                paymentMethod: paymentMethod as 'cash' | 'upi' | 'split' | 'none',
-                collectedBy: data.collectedBy || 'DRIVER',
+                paymentMethod: paymentMethod as any,
+                collectedBy: (data.collectedBy || 'DRIVER') as any,
                 collectorName: data.collectorName || null,
-                type: data.type || 'delivery'
-            }).run();
+                type: (data.type || 'delivery') as any,
+                paymentProof: data.paymentProof || null
+            });
 
             console.log('[createOrder] Inserting items...');
             for (const item of data.items) {
-                tx.insert(orderItems).values({
+                await tx.insert(orderItems).values({
                     id: uuidv4(),
                     orderId: orderId,
                     itemId: item.itemId,
                     quantity: item.quantity,
                     price: item.price,
-                }).run();
+                });
             }
 
             // Update Route Stop Status if routeId and storeId are present
             if (data.routeId && data.storeId) {
                 console.log(`[createOrder] Marking stop visited for Route: ${data.routeId}, Store: ${data.storeId}`);
-                tx.update(routeStops)
+                await tx.update(routeStops)
                     .set({
                         status: 'visited',
                         completedAt: new Date()
@@ -114,12 +115,8 @@ export async function createOrder(data: {
                             eq(routeStops.routeId, data.routeId),
                             eq(routeStops.storeId, data.storeId)
                         )
-                    )
-                    .run();
+                    );
             }
-
-
-
         });
         console.log('[createOrder] Transaction success');
     } catch (e: any) {

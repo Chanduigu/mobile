@@ -16,8 +16,7 @@ async function getOrderItemsAction(orderId: string) {
     })
         .from(orderItems)
         .leftJoin(items, eq(orderItems.itemId, items.id))
-        .where(eq(orderItems.orderId, orderId))
-        .all();
+        .where(eq(orderItems.orderId, orderId));
 
     return itemsData;
 }

@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation';
 
 export default async function StorePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const store = await db.select().from(stores).where(eq(stores.id, id)).get();
+    const store = await db.select().from(stores).where(eq(stores.id, id)).then(res => res[0]);
     if (!store) notFound();
 
     const allItems = await db.select().from(items);

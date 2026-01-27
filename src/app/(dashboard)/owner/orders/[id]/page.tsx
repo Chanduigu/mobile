@@ -7,10 +7,10 @@ import InvoiceView from '@/components/invoice-view';
 export default async function OrderInvoicePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
 
-    const order = await db.select().from(orders).where(eq(orders.id, id)).get();
+    const order = await db.select().from(orders).where(eq(orders.id, id)).then(res => res[0]);
     if (!order) notFound();
 
-    const store = await db.select().from(stores).where(eq(stores.id, order.storeId)).get();
+    const store = await db.select().from(stores).where(eq(stores.id, order.storeId)).then(res => res[0]);
 
     // Fetch items
     const orderItemRows = await db.select({

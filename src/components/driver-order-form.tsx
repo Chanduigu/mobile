@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { updateOrderAndPayment } from '@/lib/driver-actions';
+import { uploadPaymentProof } from '@/lib/upload-actions';
+import { CheckCircle2 } from 'lucide-react';
 
 type OrderItem = { itemId: string; name: string; quantity: number; price: number };
 
@@ -12,6 +14,7 @@ export default function DriverOrderForm({ orderId, initialItems, previousBalance
     const [items, setItems] = useState(initialItems);
     const [paymentMethod, setPaymentMethod] = useState<'cash' | 'upi'>('cash');
     const [receivedAmount, setReceivedAmount] = useState<number>(0);
+    const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleQtyChange = (itemId: string, newQty: number) => {
@@ -28,12 +31,32 @@ export default function DriverOrderForm({ orderId, initialItems, previousBalance
         if (!confirm('Confirm delivery details?')) return;
         setIsSubmitting(true);
 
+        if (paymentMethod === 'upi' && !paymentProofFile) {
+            alert('Please upload UPI payment screenshot to proceed.');
+            setIsSubmitting(false);
+            return;
+        }
+
+        let proofUrl = undefined;
+        if (paymentProofFile) {
+            const formData = new FormData();
+            formData.append('file', paymentProofFile);
+            const uploadRes = await uploadPaymentProof(formData);
+            if (uploadRes.error || !uploadRes.url) {
+                alert('Failed to upload payment proof');
+                setIsSubmitting(false);
+                return;
+            }
+            proofUrl = uploadRes.url;
+        }
+
         const itemsPayload = items.reduce((acc, item) => ({ ...acc, [item.itemId]: item.quantity }), {});
 
         try {
             const result = await updateOrderAndPayment(orderId, itemsPayload, {
                 method: paymentMethod,
-                amount: receivedAmount
+                amount: receivedAmount,
+                paymentProof: proofUrl
             });
 
             if (result?.error) {
@@ -124,17 +147,30 @@ export default function DriverOrderForm({ orderId, initialItems, previousBalance
                     </div>
                 </div>
 
-                {/* UPI QR Display Placeholder */}
+
+
                 {paymentMethod === 'upi' && (
-                    <div className="mt-4 p-4 bg-white rounded flex flex-col items-center justify-center">
-                        <div className="w-48 h-48 bg-gray-200 flex items-center justify-center mb-2">
-                            <img
-                                src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=thanush8123@okhdfcbank&pn=Sri%20Balaji%20Pani%20Puri&am=${balance > 0 ? balance : ''}`}
-                                alt="UPI QR"
-                                className="w-full h-full mix-blend-multiply"
-                            />
-                        </div>
-                        <p className="text-sm text-gray-500">Scan to Pay Balance</p>
+                    <div className="mt-4">
+                        <label className="text-sm font-semibold text-gray-700 block mb-2">
+                            UPI Screenshot (Required)
+                        </label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            capture="environment"
+                            onChange={(e) => setPaymentProofFile(e.target.files?.[0] || null)}
+                            className="block w-full text-sm text-gray-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-full file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100"
+                        />
+                        {paymentProofFile && (
+                            <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                                <CheckCircle2 className="w-3 h-3" /> Image selected: {paymentProofFile.name}
+                            </p>
+                        )}
                     </div>
                 )}
 
