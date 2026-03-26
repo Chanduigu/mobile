@@ -6,10 +6,16 @@ import { eq, and, desc, asc, inArray, sql, gte, lte } from 'drizzle-orm';
 
 // --- Route Management Reports ---
 
-export async function getRouteHistory(startDate?: string, endDate?: string) {
-    const whereClause = (startDate && endDate)
-        ? and(gte(routes.date, startDate), lte(routes.date, endDate))
-        : undefined;
+export async function getRouteHistory(startDate?: string, endDate?: string, driverId?: string) {
+    const conditions = [];
+    if (startDate && endDate) {
+        conditions.push(and(gte(routes.date, startDate), lte(routes.date, endDate)));
+    }
+    if (driverId) {
+        conditions.push(eq(routes.driverId, driverId));
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
     const allRoutes = await db.select({
         id: routes.id,

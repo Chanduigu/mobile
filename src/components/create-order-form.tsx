@@ -200,7 +200,7 @@ export default function CreateOrderForm({
     })), [stores]);
 
     return (
-        <div className="space-y-6 pb-40 md:pb-24">
+        <div className="space-y-6 pb-8">
             {/* QR Code Modal */}
             {showQR && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
@@ -415,15 +415,12 @@ export default function CreateOrderForm({
                     )}
                 </div>
 
-                {/* Right Column (Desktop) / Bottom Sticky (Mobile): Payment Footer */}
+                {/* Right Column (Desktop) / Normal Flow (Mobile): Payment Footer */}
                 <div className="lg:col-span-1">
                     <div className="lg:sticky lg:top-24 space-y-4">
-                        <div className={`fixed bottom-0 left-0 w-full lg:static lg:w-full bg-white lg:bg-white dark:bg-gray-900 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] lg:shadow-xl lg:border border-gray-100 lg:rounded-2xl z-40 p-5 lg:p-6 transition-transform duration-300`}>
+                        <div className="w-full bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 rounded-2xl p-5 lg:p-6">
 
-                            {/* Mobile Drag Handle */}
-                            <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6 lg:hidden" />
-
-                            <h2 className="text-lg font-bold mb-6 hidden lg:flex items-center gap-2">
+                            <h2 className="text-lg font-bold mb-6 flex items-center gap-2">
                                 <CreditCard className="w-5 h-5 text-gray-400" />
                                 <span>Payment Details</span>
                             </h2>
@@ -483,7 +480,6 @@ export default function CreateOrderForm({
                                                 <input
                                                     type="file"
                                                     accept="image/*"
-                                                    capture="environment" // Optional: prefer camera on mobile
                                                     onChange={(e) => setPaymentProofFile(e.target.files?.[0] || null)}
                                                     className="block w-full text-sm text-gray-500
                                                         file:mr-4 file:py-2 file:px-4

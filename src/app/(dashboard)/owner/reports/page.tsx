@@ -241,7 +241,7 @@ export default async function ReportsPage({
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden overflow-x-auto">
                         <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
                             <h3 className="font-bold text-gray-900">Driver Performance Leaderboard</h3>
                         </div>

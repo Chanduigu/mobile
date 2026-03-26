@@ -1,26 +1,12 @@
 {
   "version": "7",
-  "dialect": "postgresql",
+  "dialect": "sqlite",
   "entries": [
     {
       "idx": 0,
-      "version": "7",
-      "when": 1769490096067,
-      "tag": "0000_lame_roland_deschain",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1769491721974,
-      "tag": "0001_dusty_hex",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1769492901791,
-      "tag": "0002_happy_firebrand",
+      "version": "6",
+      "when": 1772900108334,
+      "tag": "0000_bumpy_pestilence",
       "breakpoints": true
     }
   ]

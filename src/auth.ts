@@ -40,9 +40,15 @@ const nextAuthResult = NextAuth({
                     // For this demo/internship practice, specific plain text comparison is okay if not strictly prod 
                     // BUT I should try to use simple comparison as requested "Simple Pani Puri"
                     // Let's assume plain text for simplicity as per "Simple" request or just direct string match
-                    if (password === user.password) return user;
-                }
+                    if (password === user.password) {
+                        return {
+                            id: user.id.toString(),
+                            name: user.username,
+                            role: user.role
+                        };
+                    }
 
+                }
                 return null;
             },
         }),
@@ -50,3 +56,4 @@ const nextAuthResult = NextAuth({
 });
 
 export const { handlers, auth, signIn, signOut } = nextAuthResult;
+

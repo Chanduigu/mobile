@@ -55,7 +55,15 @@ export default async function DriverPage({ searchParams }: { searchParams: Promi
     );
 
     // Filter logic for today relative to order.date string
-    const ordersToday = todaysOrders.filter((o: any) => o.date.startsWith(today));
+    const allOrdersToday = todaysOrders.filter((o: any) => o.date.startsWith(today));
+
+    // Get active route IDs (excluding closed routes)
+    const activeRouteIds = dailyRoutes.map(r => r.route.id);
+
+    // Filter orders to ONLY include those belonging to active routes or ad-hoc (no route)
+    const ordersToday = allOrdersToday.filter((o: any) =>
+        !o.routeId || activeRouteIds.includes(o.routeId)
+    );
 
     // Filter orders for CURRENT route if filtering applied
     const ordersForRoute = activeRouteData

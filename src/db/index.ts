@@ -1,16 +1,17 @@
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+import Database from 'better-sqlite3';
 import * as schema from './schema';
 import * as dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config();
 
-const globalForDb = global as unknown as { conn: Pool | undefined };
+const globalForDb = globalThis as unknown as { conn: Database.Database | undefined };
 
-const pool = globalForDb.conn ?? new Pool({
-    connectionString: process.env.DATABASE_URL,
-});
+const dbPath = path.join(process.cwd(), 'sqlite.db');
 
-if (process.env.NODE_ENV !== 'production') globalForDb.conn = pool;
+const sqlite = globalForDb.conn ?? new Database(dbPath);
 
-export const db = drizzle(pool, { schema });
+if (process.env.NODE_ENV !== 'production') globalForDb.conn = sqlite;
+
+export const db = drizzle(sqlite, { schema });

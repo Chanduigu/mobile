@@ -1,0 +1,19 @@
+{
+  "seeded": true,
+  "users": [
+    {
+      "id": "a8c02488-d20d-48a2-9979-74f08e348467",
+      "name": "Owner",
+      "username": "owner",
+      "password": "123",
+      "role": "owner"
+    },
+    {
+      "id": "fffeff08-40bd-4c4f-9cc1-5365f2c6d1c1",
+      "name": "Driver 1",
+      "username": "driver1",
+      "password": "123",
+      "role": "driver"
+    }
+  ]
+}

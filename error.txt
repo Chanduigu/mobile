@@ -1,0 +1,135 @@
+﻿
+> chandan@0.1.0 db:migrate
+> tsx src/migrate.ts
+
+[dotenv@17.2.3] injecting env (4) from .env -- tip: ΓÜÖ∩╕Å  load multiple .env files with { path: ['.env.local', '.env'] }
+Migrating database...
+node.exe : Migration 
+failed: DrizzleError: 
+Failed to run the 
+query 'CREATE TYPE "pub
+lic"."collected_by" AS 
+ENUM('OWNER', 
+'DRIVER');'
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : 
+NotSpecified: (Mig    
+ration faile...R', 'DR 
+   IVER');':String) 
+[], R    emoteException
+    + 
+FullyQualifiedErrorI   
+ d : NativeCommandError
+ 
+    at BetterSQLiteSess
+ion.run (C:\presidency\
+internship\antigravity_
+practice\chandan\chanda
+n\node_modules\src\sqli
+te-core\session.ts:271:
+10)
+    at SQLiteSyncDialec
+t.migrate (C:\presidenc
+y\internship\antigravit
+y_practice\chandan\chan
+dan\node_modules\src\sq
+lite-core\dialect.ts:86
+4:15)
+    ... 4 lines 
+matching cause stack 
+trace ...
+    at Module._compile 
+(node:internal/modules/
+cjs/loader:1761:14)
+    at 
+Object.transformer (C:\
+presidency\internship\a
+ntigravity_practice\cha
+ndan\chandan\node_modul
+es\tsx\dist\register-D4
+6fvsV_.cjs:3:1104)
+    at Module.load (nod
+e:internal/modules/cjs/
+loader:1481:32)
+    at Module._load (no
+de:internal/modules/cjs
+/loader:1300:12) {
+  cause: SqliteError: 
+near "TYPE": syntax 
+error
+      at 
+Database.prepare (C:\pr
+esidency\internship\ant
+igravity_practice\chand
+an\chandan\node_modules
+\better-sqlite3\lib\met
+hods\wrappers.js:5:21)
+      at BetterSQLiteSe
+ssion.prepareQuery (C:\
+presidency\internship\a
+ntigravity_practice\cha
+ndan\chandan\node_modul
+es\src\better-sqlite3\s
+ession.ts:60:28)
+      at BetterSQLiteSe
+ssion.prepareOneTimeQue
+ry (C:\presidency\inter
+nship\antigravity_pract
+ice\chandan\chandan\nod
+e_modules\src\sqlite-co
+re\session.ts:250:15)
+      at BetterSQLiteSe
+ssion.run (C:\presidenc
+y\internship\antigravit
+y_practice\chandan\chan
+dan\node_modules\src\sq
+lite-core\session.ts:26
+9:16)
+      at SQLiteSyncDial
+ect.migrate (C:\preside
+ncy\internship\antigrav
+ity_practice\chandan\ch
+andan\node_modules\src\
+sqlite-core\dialect.ts:
+864:15)
+      at migrate (C:\pr
+esidency\internship\ant
+igravity_practice\chand
+an\chandan\node_modules
+\src\better-sqlite3\mig
+rator.ts:10:13)
+      at main (C:\presi
+dency\internship\antigr
+avity_practice\chandan\
+chandan\src\migrate.ts:
+7:5)
+      at <anonymous> (C
+:\presidency\internship
+\antigravity_practice\c
+handan\chandan\src\migr
+ate.ts:12:1)
+      at 
+Object.<anonymous> (C:\
+presidency\internship\a
+ntigravity_practice\cha
+ndan\chandan\src\migrat
+e.ts:15:2)
+      at 
+Module._compile (node:i
+nternal/modules/cjs/loa
+der:1761:14) {
+    code: 
+'SQLITE_ERROR'
+  }
+}
+

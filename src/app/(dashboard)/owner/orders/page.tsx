@@ -22,7 +22,8 @@ export default async function DeliveriesPage({ searchParams }: { searchParams: P
         paidAmount: orders.paidAmount,
         storeName: stores.name,
         driverName: users.name,
-        status: orders.status
+        status: orders.status,
+        paymentProof: orders.paymentProof
     })
         .from(orders)
         .leftJoin(stores, eq(orders.storeId, stores.id))

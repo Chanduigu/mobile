@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ReportActionsCell from '@/components/report-actions-cell';
 import DownloadReportButton from '@/components/download-report-button';
+import PaymentProofThumbnail from '@/components/payment-proof-thumbnail';
 
 export default async function RouteReportPage({ params }: { params: Promise<{ routeId: string }> }) {
     const session = await auth();
@@ -129,8 +130,8 @@ export default async function RouteReportPage({ params }: { params: Promise<{ ro
                                                     <span>Total:</span>
                                                     <span className="font-medium">₹{order.totalAmount}</span>
                                                 </div>
-                                                <div className="flex justify-between mb-1 items-center">
-                                                    <span>Paid:</span>
+                                                <div className="flex justify-between mb-1 items-start">
+                                                    <span className="mt-0.5">Paid:</span>
                                                     <div className="flex flex-col items-end">
                                                         <span className="font-medium text-green-700">₹{order.paidAmount}</span>
                                                         {order.paymentMethod === 'split' ? (
@@ -138,12 +139,32 @@ export default async function RouteReportPage({ params }: { params: Promise<{ ro
                                                                 (Cash: ₹{order.cashPaid}, UPI: ₹{order.upiPaid})
                                                             </span>
                                                         ) : (
-                                                            <span className={`text-[10px] px-1.5 py-0.5 rounded uppercase ${order.paymentMethod === 'upi' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>
-                                                                {order.paymentMethod}
-                                                            </span>
+                                                            <div className="flex items-center gap-1 mt-0.5">
+                                                                <span className={`text-[10px] px-1.5 py-0.5 rounded uppercase ${order.paymentMethod === 'upi' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>
+                                                                    {order.paymentMethod}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                        {order.paymentProof && (
+                                                            <PaymentProofThumbnail paymentProof={order.paymentProof} />
                                                         )}
                                                     </div>
                                                 </div>
+
+                                                {/* Added Order Items Breakdown */}
+                                                {order.items && order.items.length > 0 && (
+                                                    <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                                                        <p className="text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Items Sold:</p>
+                                                        <ul className="space-y-1">
+                                                            {order.items.map((item: any, idx: number) => (
+                                                                <li key={idx} className="flex justify-between text-xs text-gray-600 dark:text-gray-400">
+                                                                    <span className="truncate pr-2">{item.itemName}</span>
+                                                                    <span className="font-medium whitespace-nowrap">{item.quantity} x ₹{item.price}</span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
                                                 {((order.totalAmount || 0) - (order.paidAmount || 0)) > 0 && (
                                                     <div className="flex justify-between text-red-600 font-bold border-t pt-1 mt-1 border-gray-200">
                                                         <span>Bal:</span>
@@ -211,13 +232,33 @@ export default async function RouteReportPage({ params }: { params: Promise<{ ro
                                             <span>Total:</span>
                                             <span className="font-bold">₹{order.totalAmount}</span>
                                         </div>
-                                        <div className="flex justify-between mb-1 items-center">
-                                            <span>Paid:</span>
-                                            <div className="text-right">
+                                        <div className="flex justify-between mb-1 items-start">
+                                            <span className="mt-0.5">Paid:</span>
+                                            <div className="text-right flex flex-col items-end">
                                                 <span className="font-bold text-green-600 block">₹{order.paidAmount}</span>
-                                                <span className="text-[10px] text-gray-400 uppercase">{order.paymentMethod}</span>
+                                                <div className="flex items-center gap-1 mt-0.5">
+                                                    <span className="text-[10px] text-gray-500 uppercase bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">{order.paymentMethod}</span>
+                                                </div>
+                                                {order.paymentProof && (
+                                                    <PaymentProofThumbnail paymentProof={order.paymentProof} />
+                                                )}
                                             </div>
                                         </div>
+
+                                        {/* Added Order Items Breakdown for Extra Deliveries */}
+                                        {order.items && order.items.length > 0 && (
+                                            <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                                                <p className="text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Items Sold:</p>
+                                                <ul className="space-y-1">
+                                                    {order.items.map((item: any, idx: number) => (
+                                                        <li key={idx} className="flex justify-between text-xs text-gray-600 dark:text-gray-400">
+                                                            <span className="truncate pr-2">{item.itemName}</span>
+                                                            <span className="font-medium whitespace-nowrap">{item.quantity} x ₹{item.price}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
                                         {((order.totalAmount || 0) - (order.paidAmount || 0)) > 0 && (
                                             <div className="flex justify-between text-red-600 font-bold border-t pt-1 mt-1 border-gray-100">
                                                 <span>Bal:</span>
@@ -242,7 +283,7 @@ export default async function RouteReportPage({ params }: { params: Promise<{ ro
             )}
 
             {/* Vehicle Stock Report */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden overflow-x-auto border border-gray-200 dark:border-gray-700">
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                     <h2 className="font-semibold">Vehicle Stock Report (Load vs Delivered)</h2>
                 </div>
@@ -277,7 +318,7 @@ export default async function RouteReportPage({ params }: { params: Promise<{ ro
             </div>
 
             {/* Consolidated Items */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden overflow-x-auto border border-gray-200 dark:border-gray-700">
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                     <h2 className="font-semibold">Consolidated Item Summary</h2>
                 </div>

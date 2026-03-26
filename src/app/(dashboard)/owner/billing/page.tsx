@@ -10,7 +10,7 @@ export default async function BillingPage() {
     const allPrices = await db.select().from(storePrices);
 
     return (
-        <div className="w-full h-full pb-20 md:pb-0">
+        <div className="w-full h-full">
             <h1 className="text-2xl font-bold text-black dark:text-white mb-6">Create New Bill</h1>
             <CreateOrderForm
                 stores={allStores}

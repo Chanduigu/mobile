@@ -1,10 +1,10 @@
-import { migrate } from 'drizzle-orm/node-postgres/migrator';
+import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
 import { db } from './db';
 
 async function main() {
     console.log('Migrating database...');
     // This will run migrations on the database, skipping the ones already applied
-    await migrate(db, { migrationsFolder: 'drizzle' });
+    migrate(db, { migrationsFolder: 'drizzle' });
     console.log('Migration complete.');
     process.exit(0);
 }

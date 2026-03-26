@@ -1,0 +1,120 @@
+﻿
+> chandan@0.1.0 dev
+> next dev
+
+node.exe : ΓÜá Invalid 
+next.config.ts options 
+detected: 
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Users\Chandan 
+Kumar H H\AppD ...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (ΓÜá Invalid n   
+ ex...ions detected    
+: :String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+ΓÜá     Unrecognized 
+key(s) in object: 
+'turbopack' at 
+"experimental"
+ΓÜá See more info 
+here: https://nextjs.or
+g/docs/messages/invalid
+-next-config
+ΓÜá Warning: Next.js 
+inferred your 
+workspace root, but it 
+may not be correct.
+ We detected multiple 
+lockfiles and selected 
+the directory of 
+C:\Users\Chandan Kumar 
+H H\package-lock.json 
+as the root directory.
+ To silence this 
+warning, set 
+`turbopack.root` in 
+your Next.js config, 
+or consider removing 
+one of the lockfiles 
+if it's not needed.
+   See https://nextjs.o
+rg/docs/app/api-referen
+ce/config/next-config-j
+s/turbopack#root-direct
+ory for more 
+information.
+ Detected additional 
+lockfiles: 
+   * C:\Users\Chandan 
+Kumar H H\OneDrive\Desk
+top\chandan - 
+Copy\chandan - Copy\cha
+ndan\package-lock.json
+
+Γû▓ Next.js 16.1.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.218.1:3000
+- Environments: .env
+- Experiments (use with caution):
+  ? turbopack (invalid experimental key)
+
+Γ£ô Starting...
+
+-----
+[1m[31mFATAL[39m[0m
+: An unexpected 
+Turbopack error 
+occurred. A panic log 
+has been written to 
+C:\Users\Chandan Kumar 
+H H\AppData\Local\Temp\
+next-panic-b604eb5db4f7
+a6db5ca9b4ce599ef6ab.lo
+g.
+
+To help make Turbopack 
+better, report this 
+error by ]8;;https://g
+ithub.com/vercel/next.j
+s/discussions/new?categ
+ory=turbopack-error-rep
+ort&title=Turbopack%20E
+rror%3A%20Access%20is%2
+0denied.%20%28os%20erro
+r%205%29&body=Turbopack
+%20version%3A%20%60da60
+5e0c%60%0ANext.js%20ver
+sion%3A%20%600.0.0%60%0
+A%0AError%20message%3A%
+0A%60%60%60%0AAccess%20
+is%20denied.%20%28os%20
+error%205%29%0A%60%60%6
+0&labels=Turbopack,Turb
+opack%20Panic%20Backtra
+ce\clicking 
+here.]8;;\
+-----
+
+Error [TurbopackInterna
+lError]: Access is 
+denied. (os error 5)
+    at <unknown> (Turbo
+packInternalError: 
+Access is denied. (os 
+error 5)) {
+  location: undefined
+}
+[?25h
+

@@ -12,6 +12,7 @@ type Order = {
     storeName: string | null;
     driverName: string | null;
     status: string;
+    paymentProof?: string | null;
 };
 
 type Store = { id: string; name: string; address?: string | null };
@@ -97,7 +98,7 @@ export default function DeliveryList({ initialOrders, stores, drivers }: { initi
             </div>
 
             {/* Table */}
-            <div className="bg-white dark:bg-gray-900 shadow overflow-hidden rounded-lg">
+            <div className="bg-white dark:bg-gray-900 shadow overflow-hidden overflow-x-auto rounded-lg">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
                     <thead className="bg-gray-50 dark:bg-gray-800">
                         <tr>
@@ -134,6 +135,21 @@ export default function DeliveryList({ initialOrders, stores, drivers }: { initi
                                         {order.driverName || 'N/A'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-2">
+                                        {/* View Proof Button */}
+                                        {order.paymentProof ? (
+                                            <a
+                                                href={order.paymentProof}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="text-indigo-600 hover:text-indigo-900 bg-indigo-50 px-3 py-1 rounded flex items-center gap-1"
+                                                title="View Payment Proof"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg>
+                                                Proof
+                                            </a>
+                                        ) : (
+                                            <span className="w-[72px]"></span>
+                                        )}
                                         <Link
                                             href={`/owner/orders/${order.id}`}
                                             className="text-blue-600 hover:text-blue-900 bg-blue-50 px-3 py-1 rounded"

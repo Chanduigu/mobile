@@ -21,7 +21,7 @@ async function getOrderItemsAction(orderId: string) {
     return itemsData;
 }
 
-export default async function DriverHistoryPage() {
+export default async function DriverHistoryPage(props: { params: Promise<{}>, searchParams: Promise<{}> }) {
     const session = await auth();
     const driverId = session?.user?.id;
 
